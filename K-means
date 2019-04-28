@@ -1,0 +1,211 @@
+
+import math
+import random
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+
+N=1000     #随机生成的样本数
+xlow=0    
+xhigh=40
+ylow=0
+yhigh=40
+zlow=0
+zhigh=40
+step=0      #记录聚类的次数
+
+
+def randrange(n, vmin, vmax):
+    r = np.random.rand(n)   #随机生成n 个介于0-1之间的数
+    return (vmax-vmin) * r + vmin   #得到n个[vmin，vmax]之间的随机数
+
+
+#准备数据
+a = randrange(N, xlow, xhigh)
+b = randrange(N, ylow, yhigh)
+c = randrange(N, zlow, zhigh)
+
+
+#计算欧氏距离
+def calc_e_squire(x, y):
+    dis = (x[0]- y[0]) ** 2 + (x[1] - y[1]) **2 + (x[2] - y[2]) **2
+    return dis
+
+
+m1=[]
+m2=[]
+m3=[]
+m4=[]
+
+for i in range(N):
+    if (a[i] <= int((xlow+xhigh)/2))&(b[i] <= int((ylow+yhigh)/2)):
+        m1.append(i)
+    elif (a[i] <= int((xlow+xhigh)/2))&(b[i] >= int((ylow+yhigh)/2)):
+        m2.append(i)
+    elif (a[i] >= int((xlow+xhigh)/2))&(b[i] >= int((ylow+yhigh)/2)):
+        m3.append(i)
+    else:
+        m4.append(i)
+
+sjs1=random.randint(0, len(m1))
+sjs2=random.randint(0, len(m2))
+sjs3=random.randint(0, len(m3))
+sjs4=random.randint(0, len(m4))
+ste1=m1[sjs1]
+ste2=m2[sjs2]
+ste3=m3[sjs3]
+ste4=m4[sjs4]
+
+k1 = [a[ste1],b[ste1],c[ste1]]
+k2 = [a[ste2],b[ste2],c[ste2]]
+k3 = [a[ste3],b[ste3],c[ste3]]
+k4 = [a[ste4],b[ste4],c[ste4]]
+
+
+display1x=[]
+display1y=[]
+display1z=[]
+display2x=[]
+display2y=[]
+display2z=[]
+display3x=[]
+display3y=[]
+display3z=[]
+display4x=[]
+display4y=[]
+display4z=[]
+
+
+#定义聚类
+while True:
+    step+=1
+    sse_k1 = []
+    sse_k2 = []
+    sse_k3 = []
+    sse_k4 = []
+    for i in range(N):
+        e_squire1 = calc_e_squire(k1, [a[i], b[i], c[i]])
+        e_squire2 = calc_e_squire(k2, [a[i], b[i], c[i]])
+        e_squire3 = calc_e_squire(k3, [a[i], b[i], c[i]])
+        e_squire4 = calc_e_squire(k4, [a[i], b[i], c[i]])
+        
+        if (e_squire1 <= e_squire2)&(e_squire1 <= e_squire3)&(e_squire1 <= e_squire4):
+            sse_k1.append(i)
+        elif (e_squire2 <= e_squire1)&(e_squire2 <= e_squire3)&(e_squire2 <= e_squire4):
+            sse_k2.append(i)
+        elif (e_squire3 <= e_squire1)&(e_squire3 <= e_squire2)&(e_squire3 <= e_squire4):
+            sse_k3.append(i)
+        else:
+            sse_k4.append(i)
+    
+    
+    k1_x = sum([a[i] for i in sse_k1]) / len(sse_k1)
+    k1_y = sum([b[i] for i in sse_k1]) / len(sse_k1)
+    k1_z = sum([c[i] for i in sse_k1]) / len(sse_k1)
+    k2_x = sum([a[i] for i in sse_k2]) / len(sse_k2)
+    k2_y = sum([b[i] for i in sse_k2]) / len(sse_k2)
+    k2_z = sum([c[i] for i in sse_k2]) / len(sse_k2)
+    k3_x = sum([a[i] for i in sse_k3]) / len(sse_k3)
+    k3_y = sum([b[i] for i in sse_k3]) / len(sse_k3)
+    k3_z = sum([c[i] for i in sse_k3]) / len(sse_k3)
+    k4_x = sum([a[i] for i in sse_k4]) / len(sse_k4)
+    k4_y = sum([b[i] for i in sse_k4]) / len(sse_k4)
+    k4_z = sum([c[i] for i in sse_k4]) / len(sse_k4)
+    
+    if (k1 != [k1_x, k1_y, k1_z]) or(k2 != [k2_x, k2_y, k2_z]) or (k3 != [k3_x, k3_y, k3_z]) or (k4 != [k4_x, k4_y, k4_z]):
+        k1 = [k1_x, k1_y, k1_z]
+        k2 = [k2_x, k2_y, k2_z]
+        k3 = [k3_x, k3_y, k3_z]
+        k4 = [k4_x, k4_y, k4_z]
+        display1x.append(k1_x)
+        display1y.append(k1_y)
+        display1z.append(k1_z)
+        display2x.append(k2_x)
+        display2y.append(k2_y)
+        display2z.append(k2_z)
+        display3x.append(k3_x)
+        display3y.append(k3_y)
+        display3z.append(k3_z)
+        display4x.append(k4_x)
+        display4y.append(k4_y)
+        display4z.append(k4_z)
+    else:
+        break
+
+
+label_font = {
+'color' : 'k' ,
+'size' : 25,
+'weight' : 'bold'
+}
+    
+
+fig = plt.figure(figsize=(16,12))   # 参数依然是图片大小
+ax = fig.add_subplot(111, projection='3d')      #确定子坐标轴，
+    
+ax.set_xlabel("X axis", fontdict=label_font)
+ax.set_ylabel("Y axis", fontdict=label_font)
+ax.set_zlabel("Z axis", fontdict=label_font)
+ax.set_title("K means clustering:", alpha=0.6, color="b", size=25, weight='bold')   #子图（其实就一个图）的title
+
+    
+kv1_x = [a[i] for i in sse_k1]
+kv1_y = [b[i] for i in sse_k1]
+kv1_z = [c[i] for i in sse_k1]
+kv2_x = [a[i] for i in sse_k2]
+kv2_y = [b[i] for i in sse_k2]
+kv2_z = [c[i] for i in sse_k2]
+kv3_x = [a[i] for i in sse_k3]
+kv3_y = [b[i] for i in sse_k3]
+kv3_z = [c[i] for i in sse_k3]
+kv4_x = [a[i] for i in sse_k4]
+kv4_y = [b[i] for i in sse_k4]
+kv4_z = [c[i] for i in sse_k4]
+
+
+q=0
+w=0
+r=0
+t=0
+sse_k1.append(0)
+sse_k2.append(0)
+sse_k3.append(0)
+sse_k4.append(0)
+distance=0 
+for i in range(N):
+    if sse_k1[q]==i:
+        temp = calc_e_squire([a[i],b[i],c[i]],[k1_x,k1_y,k1_z])
+        distance += math.sqrt(temp)/N
+        q+=1
+    elif sse_k2[w]==i:
+        temp = calc_e_squire([a[i],b[i],c[i]],[k1_x,k1_y,k1_z])
+        distance += math.sqrt(temp)/N
+        w+=1
+    elif sse_k3[r]==i:
+        temp = calc_e_squire([a[i],b[i],c[i]],[k1_x,k1_y,k1_z])
+        distance += math.sqrt(temp)/N
+        r+=1
+    elif sse_k4[t]==i:
+        temp = calc_e_squire([a[i],b[i],c[i]],[k1_x,k1_y,k1_z])
+        distance += math.sqrt(temp)/N
+        t+=1
+
+
+figure1 = ax.scatter(kv1_x,kv1_y,kv1_z,color='r') 
+figure2 = ax.scatter(kv2_x,kv2_y,kv2_z,color='c') 
+figure3 = ax.scatter(kv3_x,kv3_y,kv3_z,color='b') 
+figure4 = ax.scatter(kv4_x,kv4_y,kv4_z,color='k') 
+
+
+figure1 = ax.plot(display1x,display1y,display1z,color='k', linewidth=5)   
+figure1 = ax.plot(display2x,display2y,display2z,color='k', linewidth=5)   
+figure1 = ax.plot(display3x,display3y,display3z,color='k', linewidth=5)   
+figure1 = ax.plot(display4x,display4y,display4z,color='k', linewidth=5)   
+
+      
+plt.show()
+print ("----------聚类次数为" + str(step)+"次------")
+print ("----------距离聚类中心点的平均距离为" + str(distance)+"------")
+
